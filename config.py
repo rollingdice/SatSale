@@ -12,6 +12,9 @@ password = "rpcpassword"
 # Wallet (empty "" if your node has a single wallet, OR wallet name/path as shown in `biitcoin-cli listwallets`)
 wallet = ""
 
+# Enable webstore (items can be loaded and tallied)
+webstore = True
+
 # File in which API key will be stored
 api_key_path = "SatSale_API_key"
 
