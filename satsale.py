@@ -18,7 +18,7 @@ import json
 from gateways import ssh_tunnel
 import config
 from payments import database, weakhands
-from payments.price_feed import get_btc_value
+from payments.price_feed import get_btc_value, get_fiat_value
 from node import bitcoind
 from node import lnd
 from node import clightning
@@ -79,7 +79,7 @@ invoice_model = api.model(
     "invoice",
     {
         "uuid": fields.String(),
-        "dollar_value": fields.Float(),
+        "fiat_value": fields.Float(),
         "btc_value": fields.Float(),
         "method": fields.String(),
         "address": fields.String(),
@@ -102,7 +102,8 @@ status_model = api.model(
 
 @api.doc(
     params={
-        "amount": "An amount in USD.",
+        "amount": "The amount of payment.",
+        "currency": "(Optional)The currency of payment. Use ISO currency code, sats, or BTC. Default to USD for compatibility",
         "method": "(Optional) Specify a payment method: `bitcoind` for onchain, `lnd` for lightning).",
         "w_url": "(Optional) Specify a webhook url to call after successful payment. Currently only supports WooCommerce plugin.",
     }
@@ -113,8 +114,9 @@ class create_payment(Resource):
     def get(self):
         "Create Payment"
         """Initiate a new payment with an `amount` in USD."""
-        dollar_amount = request.args.get("amount")
-        currency = "USD"
+        amount = request.args.get("amount")
+        currency = request.args.get("currency")
+        #currency = "USD"
         label = ""  # request.args.get('label')
         payment_method = request.args.get("method")
         if payment_method is None:
@@ -134,12 +136,19 @@ class create_payment(Resource):
 
         invoice = {
             "uuid": str(uuid.uuid4().hex),
-            "dollar_value": dollar_amount,
-            "btc_value": round(get_btc_value(dollar_amount, currency), 8),
             "method": payment_method,
             "time": time.time(),
             "webhook": webhook,
         }
+
+        if currency is None or currency == "USD":
+            invoice["fiat_value"] = amount
+            invoice["btc_value"] = round(get_btc_value(amount, "USD"), 8)
+        elif currency == "sats":
+            sats_amount = round(int(amount), 8)
+            btc_amount = round (sats_amount/100000000, 8)
+            invoice["btc_value"] = btc_amount
+            invoice["fiat_value"] = round(get_fiat_value(btc_amount, config.fiat_currency), 2)
 
         # Get an address / invoice, and create a QR code
         invoice["address"], invoice["rhash"] = node.get_address(

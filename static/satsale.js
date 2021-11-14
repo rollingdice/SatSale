@@ -2,7 +2,9 @@
 function payment(payment_data) {
     $('document').ready(function(){
         var payment_uuid;
-        var invoiceData = {amount: payment_data.amount, method: payment_data.method};
+        var invoiceData = {amount: payment_data.amount, 
+                           method: payment_data.method,
+                           currency: payment_data.currency,};
 
         // If a webhook URL is provided (woocommerce)
         if (payment_data.w_url) {

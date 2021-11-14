@@ -6,8 +6,8 @@ host = "127.0.0.1"
 rpcport = "8332"
 
 # From ~/.bitcoin/bitcoin.conf
-username = "bitcoinrpc"
-password = "rpcpassword"
+username = "bitcoin"
+password = "havefunstayingpoor"
 
 # Wallet (empty "" if your node has a single wallet, OR wallet name/path as shown in `biitcoin-cli listwallets`)
 wallet = ""
@@ -31,18 +31,18 @@ tor_bitcoinrpc_host = None # e.g. "http://if...dwr.onion"
 tor_proxy = None
 
 #### Payment method ####
-pay_method = "bitcoind"
+#pay_method = "bitcoind"
 
 ## Lightning 
 # Switch payment_method to lnd if you want to use lightning payments instead. And uncomment lnd_dir.
-#pay_method = "lnd"
+pay_method = "lnd"
 
 # To find (or copy from remote nodes) the macaroon and TLS certs
-#lnd_dir = "~/.lnd/"
+lnd_dir = "~/.lnd/"
 
 # lnd RPC port and lnd macaroon (uncomment)
-#lnd_rpcport = "10009"
-#lnd_macaroon = "admin.macaroon"
+lnd_rpcport = "10009"
+lnd_macaroon = "invoice.macaroon"
 
 # Or clightning
 #pay_method = "clightning"
@@ -51,6 +51,9 @@ pay_method = "bitcoind"
 # creates a lightning-rpc unix domain socket
 #clightning_rpc_file = "/home/user/.lightning/lightning-rpc"
 #######################
+
+# Default fiat currency ticker for price display
+fiat_currency = "USD"
 
 # Check for payment every xx seconds
 pollrate = 15
